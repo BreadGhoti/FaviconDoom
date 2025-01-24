@@ -6,64 +6,72 @@
     <title>js-dos api</title>
     <style type="text/css">
       .dosbox-container { width: 640px; height: 400px; }
-      .dosbox-container > .dosbox-overlay { background: url(https://breadghoti.github.io/FaviconDoom/favicondoom.png); }
+      .dosbox-container > .dosbox-overlay { background: url(favicondoom.png); }
     </style>
   </head>
   <body>
-	  <button onclick="showhide()">Show in window/Favicon Only</button> 
-   <script type="text/javascript">
-   function showhide() {
-   if(document.getElementById("dosbox").style.display == 'none'){
-		document.getElementById("dosbox").style.display = 'block';
-		}else{
-		document.getElementById("dosbox").style.display = 'none';
-		}
-   }
-   </script>
+    <button onclick="showhide()">Show in window/Favicon Only</button> 
+    <script type="text/javascript">
+      function showhide() {
+        const dosboxElement = document.getElementById("dosbox");
+        if (dosboxElement.style.display === 'none') {
+          dosboxElement.style.display = 'block';
+        } else {
+          dosboxElement.style.display = 'none';
+        }
+      }
+    </script>
 	  
     <div id="dosbox"></div>
     <br/>
-    <script type="text/javascript" src="https://js-dos.com/cdn/js-dos-api.js"></script>
+    <script type="text/javascript" src="./js-dos-api.js"></script>
     <script type="text/javascript">
+      // Initialize Dosbox
       var dosbox = new Dosbox({
         id: "dosbox",
         onload: function (dosbox) {
-          dosbox.run("https://breadghoti.github.io/FaviconDoom/doom19shareware.zip", "./DOOM.EXE");
+          dosbox.run("doom19shareware.zip", "./DOOM.EXE");
         },
         onrun: function (dosbox, app) {
-          console.log("App '" + app + "' is runned");
+          console.log("App '" + app + "' is running");
         }
       });
-	  
-	  var favicanvas = document.createElement('canvas');
-	  favicanvas.width = 32;
-	  favicanvas.height = 32;
-	  var faviContext = favicanvas.getContext("2d");
-	  
-	  function dosboxToCanvas() {
-		var c = document.getElementsByClassName("dosbox-canvas")[0];
-		var canvasContext = c.getContext("2d");
-		faviContext.drawImage(c, 0, 0, 32, 32);
-		changeFavicon(favicanvas.toDataURL("image/x-icon"));
-	}
-	setInterval(dosboxToCanvas, 20);
-	
-	// snippet from https://gist.github.com/mathiasbynens/428626
-	document.head = document.head || document.getElementsByTagName('head')[0];
 
-	function changeFavicon(src) {
-	 var link = document.createElement('link'),
-		 oldLink = document.getElementById('dynamic-favicon');
-	 link.id = 'dynamic-favicon';
-	 link.rel = 'shortcut icon';
-	 link.href = src;
-	 if (oldLink) {
-	  document.head.removeChild(oldLink);
-	 }
-	 document.head.appendChild(link);
-	}
-	  
+      // Favicon Update Logic
+      var favicanvas = document.createElement('canvas');
+      favicanvas.width = 32;
+      favicanvas.height = 32;
+      var faviContext = favicanvas.getContext("2d");
+
+      function dosboxToCanvas() {
+        var c = document.querySelector(".dosbox-canvas");
+        if (c) {
+          faviContext.clearRect(0, 0, 32, 32); // Clear previous drawing
+          faviContext.drawImage(c, 0, 0, 32, 32);
+          changeFavicon(favicanvas.toDataURL("image/x-icon"));
+        } else {
+          console.warn("dosbox-canvas not found. Skipping favicon update.");
+        }
+      }
+
+      // Update favicon every 500ms
+      setInterval(dosboxToCanvas, 500);
+
+      // Change favicon
+      function changeFavicon(src) {
+        var link = document.createElement('link'),
+            oldLink = document.getElementById('dynamic-favicon');
+        link.id = 'dynamic-favicon';
+        link.rel = 'icon';
+        link.type = 'image/x-icon';
+        link.href = src;
+        if (oldLink) {
+          document.head.removeChild(oldLink);
+        }
+        document.head.appendChild(link);
+      }
     </script>
-  arrow keys to move, ctrl to shoot, space to interact. works in firefox, doesn't work in chrome, probably a dice roll with other browsers. <a href="https://github.com/VidFerris/FaviconDoom">github repo.</a>
+
+    <p>Arrow keys to move, CTRL to shoot, SPACE to interact. All resources are now local. :)</p>
   </body>
 </html>
